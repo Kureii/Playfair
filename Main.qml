@@ -51,9 +51,8 @@ Window {
                 columns: 1
                 columnSpacing: 0
                 
-
+                //upperBar
                 Rectangle {
-                    id: upperBar
                     width: 200
                     height: 200
                     color: myUpperBar
@@ -219,15 +218,16 @@ Window {
                     Layout.topMargin: 0
                     Layout.margins: 4
                     Layout.fillWidth: true
+                    font.family: "Roboto Medium"
                     background: Rectangle {color: myBackground}
                 }
 
                 TabBar {
-                    id: naiveModernTab
-                    width: 240
+                    id: engCsTab
                     height: 35
                     enabled: activeWindow
                     position: TabBar.Footer
+                    Layout.fillHeight: false
                     font.family: "Roboto Medium"
                     Layout.rightMargin: 4
                     Layout.leftMargin: 4
@@ -235,26 +235,25 @@ Window {
                     Layout.fillWidth: true
 
                     TabButton {
-                        id: naiveButton
+                        id: engBtn
                         anchors.top: parent.top
                         anchors.bottom: parent.bottom
                         bottomPadding: 18
                         padding: 8
                         background: Rectangle {
-                            color: naiveButton.hovered && activeWindow ? Qt.lighter( myBackground, 2) : myBackground
+                            color: engBtn.hovered && activeWindow ? Qt.lighter( myBackground, 2) : myBackground
                             anchors.fill: parent
                             Label {
                                 text: eng
                                 anchors.verticalCenter: parent.verticalCenter
-                                anchors.verticalCenterOffset: naiveModernTab.currentIndex == 0 ? -2 : 0
+                                anchors.verticalCenterOffset: engCsTab.currentIndex == 0 ? -2 : 0
                                 anchors.horizontalCenter: parent.horizontalCenter
-                                color: naiveButton.hovered && activeWindow ? Qt.lighter(myWhiteFont, 2) : myWhiteFont
+                                color: engBtn.hovered && activeWindow ? Qt.lighter(myWhiteFont, 2) : myWhiteFont
                             }
 
                             Rectangle {
                                 height: 4
-                                color: naiveModernTab.currentIndex
-                                       == 0 ? myHighLighht : (naiveButton.hovered && activeWindow ? Qt.lighter(myBackground, 2) : myBackground)
+                                color: engCsTab.currentIndex == 0 ? myHighLighht : (engBtn.hovered && activeWindow ? Qt.lighter(myBackground, 2) : myBackground)
                                 anchors.left: parent.left
                                 anchors.right: parent.right
                                 anchors.bottom: parent.bottom
@@ -266,25 +265,25 @@ Window {
                     }
 
                     TabButton {
-                        id: modernButton
+                        id: csBtn
                         anchors.top: parent.top
                         anchors.bottom: parent.bottom
                         bottomPadding: 18
                         padding: 8
                         background: Rectangle {
-                            color: modernButton.hovered && activeWindow ? Qt.lighter(myBackground,2) : myBackground
+                            color: csBtn.hovered && activeWindow ? Qt.lighter(myBackground,2) : myBackground
                             anchors.fill: parent
                             Label {
                                 text: cs
                                 anchors.verticalCenter: parent.verticalCenter
-                                anchors.verticalCenterOffset: naiveModernTab.currentIndex == 1 ? -2 : 0
+                                anchors.verticalCenterOffset: engCsTab.currentIndex == 1 ? -2 : 0
                                 anchors.horizontalCenter: parent.horizontalCenter
-                                color: modernButton.hovered && activeWindow ? Qt.lighter(myWhiteFont, 2) : myWhiteFont
+                                color: csBtn.hovered && activeWindow ? Qt.lighter(myWhiteFont, 2) : myWhiteFont
                             }
 
                             Rectangle {
                                 height: 4
-                                color: naiveModernTab.currentIndex == 1 ? myHighLighht : (modernButton.hovered && activeWindow ? Qt.lighter(myBackground, 2) : myBackground)
+                                color: engCsTab.currentIndex == 1 ? myHighLighht : (csBtn.hovered && activeWindow ? Qt.lighter(myBackground, 2) : myBackground)
                                 anchors.left: parent.left
                                 anchors.right: parent.right
                                 anchors.bottom: parent.bottom
@@ -296,53 +295,10 @@ Window {
                     }
                 }
 
-                Rectangle {
-                    width: 200
-                    height: 200
-                    color: "#00ffffff"
-                    Layout.margins: 12
+                GridLayout {
+                    id: gridLayout
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    border.width:0
-
-                    GridLayout {
-                        id: abcInput
-                        anchors.fill: parent
-                        rows: 5
-                        columns: 5
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-
-                        Component.onCompleted: {
-                            var component = Qt.createComponent("MyField.qml");
-                            for (var i=0; i<25; i++) {
-                                var object = component.createObject(abcInput);
-                            }
-                        }
-                        /*TextField {
-                            id: repSpaces1
-                            selectByMouse: true
-                            color: myWhiteFont
-                            enabled: activeWindow
-                            horizontalAlignment: Text.AlignHCenter
-                            font.capitalization: Font.AllUppercase
-                            font.family: "Roboto Medium"
-                            placeholderTextColor: Qt.darker(myWhiteFont, 2)
-                            placeholderText: "A"
-                            Layout.rightMargin: 40
-                            Layout.fillHeight: true
-                            Layout.fillWidth: true
-                            Layout.maximumHeight: 24
-                            Layout.minimumWidth: 24
-                            Layout.maximumWidth: 24
-                            background: Rectangle {
-                                color: myBackground
-                                //border.width: 1
-                                //border.color: Qt.darker(myBackground2, 1.1)
-                                radius: 8
-                            }
-                        }*/
-                    }
                 }
             }
         }

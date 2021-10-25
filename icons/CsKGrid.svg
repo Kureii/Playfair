@@ -1,0 +1,89 @@
+<svg version='1.1'
+    width='504' height='504'
+    xmlns='http://www.w3.org/2000/svg'>
+
+     <style type='text/css'>
+        @font-face {
+            font-family: 'Fira Code', monospace;
+            rc: url('fonts/FiraCode-Medium.ttf');
+        }
+    </style>
+
+        <rect width='504' height='504' x='0' y='0' fill='#3fa108'/>
+
+        <rect width='96' height='96' x='04' y='04' fill='#201e1b'  />
+        <text x='037.5' y='067' font-size='48' ext-anchor='middle' font-family='Fira Code' fill='#e4f8ff'>A</text>
+
+        <rect width='96' height='96' x='104' y='04' fill='#201e1b'  />
+        <text x='137.5' y='067' font-size='48' ext-anchor='middle' font-family='Fira Code' fill='#e4f8ff'>B</text>
+
+        <rect width='96' height='96' x='204' y='04' fill='#201e1b'  />
+        <text x='237.5' y='067' font-size='48' ext-anchor='middle' font-family='Fira Code' fill='#e4f8ff'>C</text>
+
+        <rect width='96' height='96' x='304' y='04' fill='#201e1b'  />
+        <text x='337.5' y='067' font-size='48' ext-anchor='middle' font-family='Fira Code' fill='#e4f8ff'>D</text>
+
+        <rect width='96' height='96' x='404' y='04' fill='#201e1b'  />
+        <text x='437.5' y='067' font-size='48' ext-anchor='middle' font-family='Fira Code' fill='#e4f8ff'>E</text>
+
+        <rect width='96' height='96' x='04' y='104' fill='#201e1b'  />
+        <text x='037.5' y='167' font-size='48' ext-anchor='middle' font-family='Fira Code' fill='#e4f8ff'>F</text>
+
+        <rect width='96' height='96' x='104' y='104' fill='#201e1b'  />
+        <text x='137.5' y='167' font-size='48' ext-anchor='middle' font-family='Fira Code' fill='#e4f8ff'>G</text>
+
+        <rect width='96' height='96' x='204' y='104' fill='#201e1b'  />
+        <text x='237.5' y='167' font-size='48' ext-anchor='middle' font-family='Fira Code' fill='#e4f8ff'>H</text>
+
+        <rect width='96' height='96' x='304' y='104' fill='#201e1b'  />
+        <text x='337.5' y='167' font-size='48' ext-anchor='middle' font-family='Fira Code' fill='#e4f8ff'>I</text>
+
+        <rect width='96' height='96' x='404' y='104' fill='#201e1b'  />
+        <text x='437.5' y='167' font-size='48' ext-anchor='middle' font-family='Fira Code' fill='#e4f8ff'>J</text>
+
+        <rect width='96' height='96' x='04' y='204' fill='#201e1b'  />
+        <text x='037.5' y='267' font-size='48' ext-anchor='middle' font-family='Fira Code' fill='#e4f8ff'>K</text>
+
+        <rect width='96' height='96' x='104' y='204' fill='#201e1b'  />
+        <text x='137.5' y='267' font-size='48' ext-anchor='middle' font-family='Fira Code' fill='#e4f8ff'>L</text>
+
+        <rect width='96' height='96' x='204' y='204' fill='#201e1b'  />
+        <text x='237.5' y='267' font-size='48' ext-anchor='middle' font-family='Fira Code' fill='#e4f8ff'>M</text>
+
+        <rect width='96' height='96' x='304' y='204' fill='#201e1b'  />
+        <text x='337.5' y='267' font-size='48' ext-anchor='middle' font-family='Fira Code' fill='#e4f8ff'>N</text>
+
+        <rect width='96' height='96' x='404' y='204' fill='#201e1b'  />
+        <text x='437.5' y='267' font-size='48' ext-anchor='middle' font-family='Fira Code' fill='#e4f8ff'>O</text>
+
+        <rect width='96' height='96' x='04' y='304' fill='#201e1b'  />
+        <text x='037.5' y='367' font-size='48' ext-anchor='middle' font-family='Fira Code' fill='#e4f8ff'>P</text>
+
+        <rect width='96' height='96' x='104' y='304' fill='#201e1b'  />
+        <text x='137.5' y='367' font-size='48' ext-anchor='middle' font-family='Fira Code' fill='#e4f8ff'>R</text>
+
+        <rect width='96' height='96' x='204' y='304' fill='#201e1b'  />
+        <text x='237.5' y='367' font-size='48' ext-anchor='middle' font-family='Fira Code' fill='#e4f8ff'>S</text>
+
+        <rect width='96' height='96' x='304' y='304' fill='#201e1b'  />
+        <text x='337.5' y='367' font-size='48' ext-anchor='middle' font-family='Fira Code' fill='#e4f8ff'>T</text>
+
+        <rect width='96' height='96' x='404' y='304' fill='#201e1b'  />
+        <text x='437.5' y='367' font-size='48' ext-anchor='middle' font-family='Fira Code' fill='#e4f8ff'>U</text>
+
+        <rect width='96' height='96' x='04' y='404' fill='#201e1b'  />
+        <text x='037.5' y='467' font-size='48' ext-anchor='middle' font-family='Fira Code' fill='#e4f8ff'>V</text>
+
+        <rect width='96' height='96' x='104' y='404' fill='#201e1b'  />
+        <text x='137.5' y='467' font-size='48' ext-anchor='middle' font-family='Fira Code' fill='#e4f8ff'>W</text>
+
+        <rect width='96' height='96' x='204' y='404' fill='#201e1b'  />
+        <text x='237.5' y='467' font-size='48' ext-anchor='middle' font-family='Fira Code' fill='#e4f8ff'>X</text>
+
+        <rect width='96' height='96' x='304' y='404' fill='#201e1b'  />
+        <text x='337.5' y='467' font-size='48' ext-anchor='middle' font-family='Fira Code' fill='#e4f8ff'>Y</text>
+
+        <rect width='96' height='96' x='404' y='404' fill='#201e1b'  />
+        <text x='437.5' y='467' font-size='48' ext-anchor='middle' font-family='Fira Code' fill='#e4f8ff'>Z</text>
+
+</svg>
