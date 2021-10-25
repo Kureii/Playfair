@@ -11,9 +11,9 @@ class runQML():
         sys_argv = sys.argv
         sys_argv += ['--style', 'Fusion']
         self.app = QApplication(sys_argv)
-        #app_icon = PySide6.QtGui.QIcon()
-        #app_icon.addFile('icons/TaskBar.svg')
-        #self.app.setWindowIcon(app_icon)
+        app_icon = QIcon()
+        app_icon.addFile('icons/TaskBar.svg')
+        self.app.setWindowIcon(app_icon)
         QFontDatabase.addApplicationFont('fonts/Poppins-Medium.ttf')
         QFontDatabase.addApplicationFont('fonts/Roboto-Medium.ttf')
         self.engine = QQmlApplicationEngine()
