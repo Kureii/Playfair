@@ -41,8 +41,6 @@ def GenGrid(str):
             f.close()
         str = tmp
 
-GenGrid("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
-
 class Playfair():
     def __init__(self, keyList, text, supplement, encode = True, eng = True):
         keyList = keyList
@@ -174,8 +172,3 @@ class Playfair():
             str += i
         str = self.spaceSolver(str)
         return str
-
-
-Petrklic =['P','E','T','R','K','L','I','C','A','B','D','F','G','H','M','N','O','Q','S','U','V','W','X','Y','Z']
-print(Playfair(Petrklic, "PRILS ZLUTOUCKYY KUUN UUPEL DABELSKEE OODY ", "X", eng=False).output)
-print(Playfair(Petrklic, "EKCIQ YVBQK QNBTZ YZYZT QZQZQ VQZQZ ETCVH LIKAN PTTWQ WQWHV", "X", False, eng=False).output)

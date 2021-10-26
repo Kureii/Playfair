@@ -18,6 +18,14 @@ Window {
     property string cs: "Czech (Česky)"
     property string filename: ""
     property string textChoseFile: engCsTab.currentIndex == 0 ? "File unchosed" : "Soubor nevybrán"
+    property string spcChar: ""
+    property string myInputText: ""
+    property string illChar: ""
+
+    readonly property string alpha: "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    readonly property string solidEngAlpha: "ABCDEFGHIKLMNOPQRSTUVWXYZ"
+    readonly property string solidCsVAlpha: "ABCDEFGHIJKLMNOPQRSTUVXYZ"
+    readonly property string solidCsKAlpha: "ABCDEFGHIJKLMNOPRSTUVWXYZ"
 
     readonly property color myUpperBar: "#1a1512"
     readonly property color myBackground: "#201e1b"
@@ -29,10 +37,30 @@ Window {
     readonly property color myCloseBtn: "#de2f05"
 
     property bool activeWindow: true
+    property bool keyErr: false
+    property bool err: enableEncDec()
 
     property int spaceValue: 5
+    property int rplSpcValue: 0
 
+    property var engAlpha: ["WHITOUT SPACES","A","B","C","D","E","F","G","H","I","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"] 
+    property var csVAlpha: ["BEZ MEZER","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","X","Y","Z"] //cs V
+    property var csKAlpha: ["BEZ MEZER","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","R","S","T","U","V","W","X","Y","Z"] // cs K
     
+    function enableEncDec() {
+        if (spcCharErr.visible || keyErrText.visible) {
+            err = true
+        } else if (key.text == "") {
+            err = true
+        } else if (textFileTab.currentIndex == 0 && inputText == ""){
+            err = true
+        } else if (textFileTab.currentIndex == 1 && fileState.text == textChoseFile) {
+            err = true
+        } else {
+            err = false
+        }
+        
+    } 
 
     Flickable {
         anchors.fill: parent
@@ -214,6 +242,8 @@ Window {
 
                 }
 
+
+                // lang
                 Label {
                     color: myWhiteFont
                     text: lang
@@ -229,6 +259,7 @@ Window {
                     background: Rectangle {color: myBackground}
                 }
 
+                // lang
                 TabBar {
                     id: engCsTab
                     height: 35
@@ -270,6 +301,11 @@ Window {
                                 anchors.bottomMargin: 0
                             }
                         }
+                        onClicked: {
+                            enableEncDec()
+                            rplSpc.currentIndex = rplSpcValue
+                            spcChar = csVAlpha[rplSpc.currentIndex]
+                        }
                     }
 
                     TabButton {
@@ -300,6 +336,15 @@ Window {
                                 anchors.bottomMargin: 0
                             }
                         }
+                        onClicked: {
+                            enableEncDec()
+                            rplSpc.currentIndex = rplSpcValue
+                            if (csVKTab.currentIndex == 0) {
+                                spcChar = csVAlpha[rplSpc.currentIndex]
+                            } else {
+                                spcChar = csKAlpha[rplSpc.currentIndex]
+                            }
+                        }
                     }
                 }
 
@@ -310,6 +355,8 @@ Window {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
 
+
+                    // grids
                     StackLayout {
                         width: 100
                         height: 100
@@ -391,6 +438,13 @@ Window {
                                 Layout.topMargin: -20
                                 Layout.bottomMargin : -1
                                 currentIndex: 0
+                                Layout.fillWidth: true
+                                enabled: activeWindow
+                                Layout.leftMargin: 0
+                                Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+                                Layout.fillHeight: true
+                                font.family: "Poppins Medium"
+                                Layout.rightMargin: 0
                                 TabButton {
                                     id: csVBtn
                                     anchors.top: parent.top
@@ -402,7 +456,7 @@ Window {
                                         anchors.fill: parent
                                         Label {
                                             color: csVBtn.hovered && activeWindow ? Qt.lighter(myUpperBar, 2) : myUpperBar
-                                            text: "V ❱❱ W"
+                                            text: "W ❱❱ V"
                                             anchors.verticalCenter: parent.verticalCenter
                                             anchors.verticalCenterOffset: csVKTab.currentIndex == 0 ? -2 : 0
                                             anchors.horizontalCenter: parent.horizontalCenter
@@ -418,6 +472,10 @@ Window {
                                             anchors.leftMargin: 0
                                             anchors.bottomMargin: 0
                                         }
+                                    }
+                                    onClicked: {
+                                        rplSpc.currentIndex = rplSpcValue
+                                        enableEncDec()
                                     }
                                 }
 
@@ -449,14 +507,11 @@ Window {
                                             anchors.bottomMargin: 0
                                         }
                                     }
+                                    onClicked: {
+                                        rplSpc.currentIndex = rplSpcValue
+                                        enableEncDec()
+                                    }
                                 }
-                                Layout.fillWidth: true
-                                enabled: activeWindow
-                                Layout.leftMargin: 0
-                                Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
-                                Layout.fillHeight: true
-                                font.family: "Poppins Medium"
-                                Layout.rightMargin: 0
                             }
                         }
 
@@ -470,7 +525,7 @@ Window {
                         Layout.margins: 16
 
 
-
+                        // key
                         TextField {
                             id: key
                             selectByMouse: true
@@ -494,10 +549,91 @@ Window {
                                 radius: 8
                             }
                             onEditingFinished: {
+                                keyErrText.visible = false
+                                if(key.text != "") {
+                                    keyErr = false
+                                    let myKey = key.text
+                                    myKey = myKey.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                                    myKey = myKey.toUpperCase()
+                                    key.text = myKey
+                                    for (var i = 0; i < myKey.length; i++)  {
+                                        if (!alpha.includes(myKey[i]))  {   
+                                            keyErr = true
+                                            illChar = myKey[i]
+                                            break
+                                        }
+                                    }
 
+                                    if (keyErr) {
+                                        keyErrText.visible = true
+                                    } else {
+                                        var itsOk = true
+                                        if (engCsTab.currentIndex == 0) {
+                                            if (solidEngAlpha.includes(myKey)) {itsOk = false}
+                                        } else {
+                                            if (csVKTab.currentIndex == 0) {
+                                                if (solidCsVAlpha.includes(myKey)) {
+                                                    itsOk = false
+                                                    keyErr2.visible = true
+                                                }
+                                            } else {
+                                                if (solidCskAlpha.includes(myKey)) {itsOk = false}
+                                            }
+                                        }
+                                        if(itsOk){
+                                            myData.getKey(myKey)
+                                            gridEng.source = ""
+                                            gridCsV.source = ""
+                                            gridCsK.source = ""
+                                            gridEng.source = "icons/EngGrid.svg"
+                                            gridCsV.source = "icons/CsVGrid.svg"
+                                            gridCsK.source = "icons/CsKGrid.svg"
+                                            if (rplSpcValue != 0){
+                                                if(inputText.text != ""){
+                                                    if (inputText.text.includes(spcChar)) {
+                                                        spcCharErr.visible = true
+                                                    } else if (engCsTab.currentIndex == 0 && spcChar == "I") {
+                                                        if (inputText.text.includes("J")) {
+                                                            spcCharErr.visible = true
+                                                        }
+                                                    } else {
+                                                        if (csVKTab.currentIndex == 0 && spcChar == "K") {
+                                                            if (inputText.text.includes("Q")) {
+                                                                spcCharErr.visible = true
+                                                            }
+                                                        } else {
+                                                            if (spcChar == "V" && inputText.text.includes("W")) {
+                                                                spcCharErr.visible = true
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                enableEncDec()
                             }
                         }
 
+                        // Err: char in input
+                        Label {
+                            id: keyErrText
+                            text: !keyErr ? (engCsTab.currentIndex ? "Klíč je stejný jako abeceda." : "Key is same like alphabet." ) :
+                                        (engCsTab.currentIndex ? ("Klíč obsahuje neočekávaný znak: "  + illChar) : ("Key contains unexpected char: " + illChar))
+                            Layout.fillHeight: true
+                            Layout.fillWidth: true
+                            Layout.topMargin: -4
+                            visible: false
+                            font.pixelSize: 12
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                            font.family: "Poppins Medium"
+                            color: myCloseBtn
+                        }
+
+                        // replace spaces
                         RowLayout {
                             Layout.columnSpan: 5
                             Layout.fillWidth: true
@@ -523,13 +659,9 @@ Window {
                                 Layout.rightMargin: engCsTab.currentIndex == 0 ? 0 :14
                                 Layout.maximumWidth: 130
                                 Layout.fillWidth: true
-                                currentIndex: 0
+                                currentIndex: rplSpcValue
                                 font.family: "Poppins Medium"
-                                model: engCsTab.currentIndex == 0 ? 
-                                    ["WHITOUT SPACES","A","B","C","D","E","F","G","H","I","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"] : //eng 
-                                    (csVKTab.currentIndex == 0 ? 
-                                    ["BEZ MEZER","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","X","Y","Z"] : //cs V
-                                    ["BEZ MEZER","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","R","S","T","U","V","W","X","Y","Z"]) // cs K
+                                model: engCsTab.currentIndex == 0 ? engAlpha : (csVKTab.currentIndex == 0 ? csVAlpha : csKAlpha)
                                 
                                 delegate: ItemDelegate {
                                     width: rplSpc.width
@@ -600,11 +732,60 @@ Window {
                                     }
                                 }
 
-                                onAccepted: {
+                                onActivated: {
+                                    spcCharErr.visible = false
+                                    rplSpcValue = rplSpc.currentIndex
+                                    if (engCsTab.currentIndex == 0) {
+                                        spcChar = engAlpha[rplSpc.currentIndex]
+                                    } else {
+                                        if (csVKTab.currentIndex == 0) {
+                                            spcChar = csVAlpha[rplSpc.currentIndex]
+                                        } else {
+                                            spcChar = csKAlpha[rplSpc.currentIndex]
+                                        }
+                                    }
+                                    if (rplSpcValue != 0 && keyErrText.visible == false){
+                                        if (inputText.text.includes(spcChar) || myInputText.includes(spcChar)) {
+                                            spcCharErr.visible = true
+                                        } else if (engCsTab.currentIndex == 0 && spcChar == "I" ) {
+                                            if (inputText.text.includes("J") || myInputText.includes("J")) {
+                                                spcCharErr.visible = true
+                                            }
+                                        } else {
+                                            if (csVKTab.currentIndex == 0 && spcChar == "K") {
+                                                if (inputText.text.includes("Q") || myInputText.includes("Q")) {
+                                                    spcCharErr.visible = true
+                                                }
+                                            } else if (spcChar == "V"){
+                                                if (inputText.text.includes("W") || myInputText.includes("W")) {
+                                                    spcCharErr.visible = true
+                                                }
+                                            }
+                                        }
+                                    }
+                                    enableEncDec()
                                 }
                             }
                         }
 
+                        // Err: char in input
+                        Label {
+                            id: spcCharErr
+                            text: engCsTab.currentIndex ? (csVKTab.currentIndex == 0 ? "Znak pro náhradu mezer je ve vstupu. (W ❱❱ V)" : 
+                                        "Znak pro náhradu mezer je ve vstupu. (Q ❱❱ K)") : "Char for replace spaces is in input. (J ❱❱ I)" 
+                            Layout.fillHeight: true
+                            Layout.fillWidth: true
+                            Layout.topMargin: -8
+                            visible: false
+                            font.pixelSize: 12
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                            font.family: "Poppins Medium"
+                            color: myCloseBtn
+                        }
+
+                        // file / text
                         StackLayout {
                             width: 200
                             height: 100
@@ -637,7 +818,31 @@ Window {
                                         radius: 8
                                     }
                                     onEditingFinished: {
-                                        console.log("edited")
+                                        spcCharErr.visible = false
+                                        var myinputText = inputText.text
+                                        myinputText = myinputText.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                                        myinputText = myinputText.toUpperCase()
+                                        inputText.text = myinputText
+                                        if (rplSpcValue != 0 && keyErrText.visible == false){
+                                            if (inputText.text.includes(spcChar)) {
+                                                spcCharErr.visible = true
+                                            } else if (engCsTab.currentIndex == 0 && spcChar == "I") {
+                                                if (inputText.text.includes("J")) {
+                                                    spcCharErr.visible = true
+                                                }
+                                            } else {
+                                                if (csVKTab.currentIndex == 0 && spcChar == "K") {
+                                                    if (inputText.text.includes("Q")) {
+                                                        spcCharErr.visible = true
+                                                    }
+                                                } else {
+                                                    if (spcChar == "V" && inputText.text.includes("W")) {
+                                                        spcCharErr.visible = true
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        enableEncDec()
                                     }
                                 }
                                 ScrollBar.vertical: ScrollBar {}
@@ -669,7 +874,10 @@ Window {
                                             color: myWhiteFont
                                         }
                                     }
-                                    onClicked: fileDialog.visible = true
+                                    onClicked: {
+                                        fileDialog.visible = true
+                                        if (spcCharErr.visible || keyErrText.visible) {err = true} else {err = false}
+                                    }
                                 }
 
 
@@ -690,6 +898,7 @@ Window {
                 
                         }
 
+                        // text / file button tab
                         TabBar {
                             id: textFileTab
                             width: 240
@@ -737,6 +946,10 @@ Window {
                                         anchors.topMargin: 0
                                     }
                                 }
+                                onClicked: {
+                                    myData.getInputIndex(textFileTab.currentIndex)
+                                    enableEncDec()
+                                }
                             }
 
                             TabButton {
@@ -772,9 +985,14 @@ Window {
                                         anchors.topMargin: 0
                                     }
                                 }
+                                onClicked: {
+                                    myData.getInputIndex(textFileTab.currentIndex)
+                                    enableEncDec()
+                                }
                             }
                         } 
 
+                        // devide spaces
                         RowLayout {
                             Layout.fillHeight: true
                             Layout.fillWidth: true
@@ -888,6 +1106,7 @@ Window {
                                     }
                                     onValueChanged: {
                                         spaceValue = spaceSpin.value
+                                        enableEncDec()
                                     }
                                 }
 
@@ -905,7 +1124,8 @@ Window {
                         }
                     }
                 }
-
+                
+                //encode decode buttons
                 RowLayout {
                     Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                     Layout.fillWidth: true
@@ -918,13 +1138,13 @@ Window {
 
                     Button {
                         id: encBtn
-                        enabled: activeWindow
+                        enabled: err ? false : activeWindow
                         Layout.fillHeight: true
                         Layout.fillWidth: true
                         Layout.rightMargin: -3
                         background: Rectangle {
                             anchors.fill: parent
-                            color: encBtn.down ? myHighLighht : (encBtn.hovered && activeWindow ? Qt.lighter(myBackground, 2) : myBackground)
+                            color: err ? myBackground : (encBtn.down ? myHighLighht : (encBtn.hovered && activeWindow ? Qt.lighter(myBackground, 2) : myBackground))
                             radius: 8
 
                             Label {
@@ -944,21 +1164,28 @@ Window {
                                 anchors.rightMargin: 0
                                 anchors.topMargin: 0
                                 anchors.bottomMargin: 0
-                                color: encBtn.down ? myHighLighht : (encBtn.hovered && activeWindow ? Qt.lighter(myBackground, 2) : myBackground)
+                                color: err ? myBackground : (encBtn.down ? myHighLighht : (encBtn.hovered && activeWindow ? 
+                                        Qt.lighter(myBackground, 2) : myBackground))
                             }
                         }
-                        onClicked: console.log("encode")
+                        onClicked: {
+                            myData.getInputIndex(textFileTab.currentIndex)
+                            if(textFileTab.currentIndex == 0) {
+                                myData.getInput(inputText.text.toUpperCase())
+                            }
+                        }
                     }
 
                     Button {
                         id: decBtn
-                        enabled: activeWindow
+                        enabled: err ? false : activeWindow
                         Layout.fillHeight: true
                         Layout.fillWidth: true
                         Layout.leftMargin: -3
                         background: Rectangle {
                             anchors.fill: parent
-                            color: decBtn.down ? myHighLighht : (decBtn.hovered && activeWindow ? Qt.lighter(myBackground, 2) : myBackground)
+                            color: err ? myBackground : (decBtn.down ? myHighLighht : (decBtn.hovered && activeWindow ? 
+                                        Qt.lighter(myBackground, 2) : myBackground))
                             radius: 8
 
                             Label {
@@ -978,7 +1205,8 @@ Window {
                                 anchors.leftMargin: 0
                                 anchors.topMargin: 0
                                 anchors.bottomMargin: 0
-                                color: decBtn.down ? myHighLighht : (decBtn.hovered && activeWindow ? Qt.lighter(myBackground, 2) : myBackground)
+                                color: err ? myBackground : (decBtn.down ? myHighLighht : (decBtn.hovered && activeWindow ? 
+                                        Qt.lighter(myBackground, 2) : myBackground))
                             }
                         }
                         onClicked: console.log("decode")
@@ -1000,12 +1228,41 @@ Window {
                 }
                 var filename = url.substring(index);
                 fileState.text = filename
+                myData.getInput(url)
+                if (rplSpcValue != 0 && keyErrText.visible == false){
+                    if (myInputText.includes(spcChar)) {
+                        spcCharErr.visible = true
+                    } else if (engCsTab.currentIndex == 0 && spcChar == "I") {
+                        if (myInputText.includes("J")) {
+                            spcCharErr.visible = true
+                        }
+                    } else {
+                        if (csVKTab.currentIndex == 0 && spcChar == "K") {
+                            if (myInputText.includes("Q")) {
+                                spcCharErr.visible = true
+                            }
+                        } else {
+                            if (spcChar == "V" && myInputText.includes("W")) {
+                                spcCharErr.visible = true
+                            }
+                        }
+                    }
+                }
+                enableEncDec()
 
             }
             onRejected: {
                 fileState.text = textChoseFile
+                enableEncDec()
             }
-
         } 
+
+
+        Connections {
+            target: myData
+            function onOpenText(opT) {
+                myInputText = opT
+            }
+        }
     }
 }
