@@ -1,4 +1,4 @@
-from cairosvg import svg2png
+import math
 
 def GenGrid(str):
     tmp = str
@@ -42,7 +42,7 @@ def GenGrid(str):
         str = tmp
 
 class Playfair():
-    def __init__(self, keyList, text, supplement, encode = True, eng = True):
+    def __init__(self, keyList, text, supplement, encode = True, eng = True, spaces = 5):
         keyList = keyList
         txt = ' '.join(text.split())
         self.sup = supplement
@@ -51,8 +51,13 @@ class Playfair():
         self.output = ""
         if encode:
             self.output = self.enc(txt, keyList)
+            self.output = self.Steps(self.output, spaces)
         else:
+            txt = txt.replace(" ","")
             self.output = self.dec(txt, keyList)
+
+    def __str__(self):
+        return self.output
     
     def makeDict(self, myList):
         myDict = {}
@@ -98,7 +103,7 @@ class Playfair():
         txt = list(txt)
         finalTxt = ""
         for i in range(0, len(txt), 2):
-            if i + 3 != len(txt):
+            if i + 3 < len(txt):
                 if txt[i] == self.sup: 
                     if txt[i + 1] == txt[i + 3]:
                         txt[i] = ""
@@ -111,6 +116,8 @@ class Playfair():
                         txt[i + 3] = ""
                     else:
                         txt[i + 1] = " "
+        if txt[-1] == self.sup:
+            txt = txt[0:-1]
         for i in txt:
             finalTxt += i
         return finalTxt
@@ -126,8 +133,8 @@ class Playfair():
             tmp2 = keyDict[myList[i + 1]]
             # Column shift
             if tmp % 5 == tmp2 % 5:
-                myList[i] = invKeyDict[tmp + 5 % 25]
-                myList[i + 1] = invKeyDict[tmp2 + 5 % 25]
+                myList[i] = invKeyDict[(tmp + 5) % 25]
+                myList[i + 1] = invKeyDict[(tmp2 + 5) % 25]
             elif tmp // 5 == tmp2 // 5:
                 tmp3 =tmp // 5 * 5
                 myList[i] = invKeyDict[((tmp + 1) % 5) + tmp3]
@@ -154,8 +161,8 @@ class Playfair():
             tmp2 = keyDict[myList[i + 1]]
             # Column shift
             if tmp % 5 == tmp2 % 5:
-                myList[i] = invKeyDict[tmp - 5 % 25]
-                myList[i + 1] = invKeyDict[tmp2 - 5 % 25]
+                myList[i] = invKeyDict[(tmp - 5) % 25]
+                myList[i + 1] = invKeyDict[(tmp2 - 5) % 25]
             elif tmp // 5 == tmp2 // 5:
                 tmp3 =tmp // 5 * 5
                 myList[i] = invKeyDict[((tmp - 1) % 5) + tmp3]
@@ -172,3 +179,33 @@ class Playfair():
             str += i
         str = self.spaceSolver(str)
         return str
+
+    def Steps(self, string, steps):
+        Lenght = len(string)
+        iterations = math.ceil(Lenght / steps)
+        newString =""
+        for i in range(iterations):
+            for j in range(steps):
+                index = i * steps + j
+                if index < Lenght:
+                    newString += string[index]
+            newString += " "
+        
+        return newString
+
+
+def IlChar(abc, text):
+    output = []
+    if abc.isupper():
+        text = text.upper()
+    for i in text:
+        if i not in abc:
+            output.append(i)
+    output =list(dict.fromkeys(output))
+    return output
+
+def makeList(str):
+    output = []
+    for i in str:
+        output.append(i)
+    return output
