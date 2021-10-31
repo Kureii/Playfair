@@ -41,7 +41,9 @@ Window {
 
     property bool activeWindow: true
     property bool keyErr: false
-    property bool err: enableEncDec()
+    property bool emptyErr: false
+    property bool err: false
+    property bool err2: false
 
     property int spaceValue: 5
     property int rplSpcValue: 22
@@ -50,22 +52,47 @@ Window {
     property var engAlpha: ["A","B","C","D","E","F","G","H","I","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"] 
     property var csVAlpha: ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","X","Y","Z"] //cs V
     property var csKAlpha: ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","R","S","T","U","V","W","X","Y","Z"] // cs K
-    property var illChars: ["1","2"]
+    property var badChar: ["1","2"]
     
     function enableEncDec() {
-        if (spcCharErr.visible || keyErrText.visible) {
+        if (key.text == "") {
+            emptyErr = true
+            keyErr = true
             err = true
-        } else if (key.text == "") {
+        } else if (alpha.substring(0 , key.text.length) == key.text) {
+            emptyErr = false
+            keyErr = true
             err = true
-        } else if (textFileTab.currentIndex == 0 && inputText.text == ""){
+        } else if (solidEngAlpha.substring(0 , key.text.length) == key.text) {
+            emptyErr = false
+            keyErr = true
             err = true
-        } else if (textFileTab.currentIndex == 1 && (fileState.color == myCloseBtn || fileState.text == textChoseFile)) {
+        } else if (solidCsVAlpha.substring(0 , key.text.length) == key.text) {
+            emptyErr = false
+            keyErr = true
+            err = true
+        } else if (solidCsKAlpha.substring(0 , key.text.length) == key.text) {
+            emptyErr = false
+            keyErr = true
             err = true
         } else {
-            err = false
+            emptyErr = false
+            keyErr = false
+            keyErrText.visible = false
+            if (textFileTab.currentIndex == 0 && inputText.text == ""){
+                err = true
+            } else if (textFileTab.currentIndex == 1 && (fileState.color == myCloseBtn || fileState.text == textChoseFile)) {
+                err = true
+            } else {
+                err = false
+                keyErrText.visible = false
+                spcCharErr.visible = false
+                emptyInErr.visible = false
+            }
         }
         
-    } 
+        
+    }
 
     Flickable {
         anchors.fill: parent
@@ -126,13 +153,17 @@ Window {
                             Layout.fillHeight: true
                             property variant clickPos: "1,1"
                             onPressed: {
-                                clickPos  = Qt.point(mouseX,mouseY)
+                                if (activeWindow) {
+                                    clickPos  = Qt.point(mouseX,mouseY)
+                                }
                             }
 
                             onPositionChanged: {
-                                var delta = Qt.point(mouseX-clickPos.x, mouseY-clickPos.y)
-                                mainWindow.x += delta.x;
-                                mainWindow.y += delta.y;
+                                if (activeWindow) {
+                                    var delta = Qt.point(mouseX-clickPos.x, mouseY-clickPos.y)
+                                    mainWindow.x += delta.x;
+                                    mainWindow.y += delta.y;
+                                }
                             }
 
 
@@ -372,15 +403,11 @@ Window {
                         Layout.margins: 16
                         Layout.columnSpan: 3
 
-
                         Image {
-                            id: gridEng
                             width: 100
                             height: 100
-                            source: "icons/EngGrid.svg"
+                            source: "icons/BaseGrid.svg"
                             antialiasing: true
-                            cache: false
-                            asynchronous: true
                             Layout.margins: 0
                             Layout.minimumHeight: 250
                             Layout.minimumWidth: 250
@@ -391,6 +418,20 @@ Window {
                             sourceSize.height: 500
                             sourceSize.width: 500
                             fillMode: Image.PreserveAspectFit
+
+                            Image {
+                                id: gridEng
+                                width: 100
+                                height: 100
+                                source: "icons/EngGrid.svg"
+                                antialiasing: true
+                                cache: false
+                                asynchronous: true
+                                anchors.fill: parent
+                                sourceSize.height: 500
+                                sourceSize.width: 500
+                                fillMode: Image.PreserveAspectFit
+                            }
                         }
 
                         ColumnLayout {
@@ -406,13 +447,11 @@ Window {
                                 currentIndex: csVKTab.currentIndex
 
                                 Image {
-                                    id: gridCsV
                                     width: 100
                                     height: 100
-                                    source: "icons/CsVGrid.svg"
+                                    source: "icons/BaseGrid.svg"
                                     antialiasing: true
-                                    cache: false
-                                    asynchronous: true
+                                    Layout.margins: 0
                                     Layout.minimumHeight: 218
                                     Layout.minimumWidth: 218
                                     Layout.maximumWidth: 218
@@ -422,16 +461,28 @@ Window {
                                     sourceSize.height: 500
                                     sourceSize.width: 500
                                     fillMode: Image.PreserveAspectFit
+                                    
+                                    Image {
+                                        id: gridCsV
+                                        width: 100
+                                        height: 100
+                                        source: "icons/CsVGrid.svg"
+                                        antialiasing: true
+                                        cache: false
+                                        asynchronous: true
+                                        anchors.fill: parent
+                                        sourceSize.height: 500
+                                        sourceSize.width: 500
+                                        fillMode: Image.PreserveAspectFit
+                                    }
                                 }
 
                                 Image {
-                                    id: gridCsK
                                     width: 100
                                     height: 100
-                                    source: "icons/CSKGrid.svg"
+                                    source: "icons/BaseGrid.svg"
                                     antialiasing: true
-                                    cache: false
-                                    asynchronous: true
+                                    Layout.margins: 0
                                     Layout.minimumHeight: 218
                                     Layout.minimumWidth: 218
                                     Layout.maximumWidth: 218
@@ -441,6 +492,20 @@ Window {
                                     sourceSize.height: 500
                                     sourceSize.width: 500
                                     fillMode: Image.PreserveAspectFit
+
+                                    Image {
+                                        id: gridCsK
+                                        width: 100
+                                        height: 100
+                                        source: "icons/CsKGrid.svg"
+                                        antialiasing: true
+                                        cache: false
+                                        asynchronous: true
+                                        anchors.fill: parent
+                                        sourceSize.height: 500
+                                        sourceSize.width: 500
+                                        fillMode: Image.PreserveAspectFit
+                                    }
                                 }
                             }
 
@@ -553,6 +618,7 @@ Window {
                             font.family: "Poppins Medium"
                             placeholderTextColor: Qt.lighter(myUpperBar, 2)
                             placeholderText: engCsTab.currentIndex == 0 ? "KEY" : "KLÍČ"
+                            validator: RegularExpressionValidator { regularExpression:  /^[a-zA-Zá-žÁ-Ž]+$/ }
                             Layout.rightMargin: 0
                             Layout.fillHeight: true
                             Layout.fillWidth: true
@@ -563,81 +629,38 @@ Window {
                                 border.color: Qt.darker(myBackground2, 1.1)
                                 radius: 8
                             }
-                            onEditingFinished: {
+                            onTextChanged: {
                                 keyErrText.visible = false
                                 if(key.text != "") {
+                                    var tmp = key.cursorPosition
                                     keyErr = false
+                                    emptyErr = false
                                     let myKey = key.text
                                     myKey = myKey.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
                                     myKey = myKey.replace(" ", "")
                                     myKey = myKey.toUpperCase()
                                     key.text = myKey
-                                    for (var i = 0; i < myKey.length; i++)  {
-                                        if (!alpha.includes(myKey[i]))  {   
-                                            keyErr = true
-                                            illChar = myKey[i]
-                                            break
-                                        }
-                                    }
-
-                                    if (keyErr) {
-                                        keyErrText.visible = true
+                                    enableEncDec()
+                                    key.cursorPosition = tmp
+                                    if(!keyErr){
+                                        myData.getKey(myKey)
+                                        gridEng.source = ""
+                                        gridCsV.source = ""
+                                        gridCsK.source = ""
+                                        gridEng.source = "icons/EngGrid.svg"
+                                        gridCsV.source = "icons/CsVGrid.svg"
+                                        gridCsK.source = "icons/CsKGrid.svg"
                                     } else {
-                                        var itsOk = true
-                                        if (alpha.substring(0 , myKey.length) == myKey) {
-                                            itsOk = false
-                                            keyErrText.visible = true
-                                        } else if (solidEngAlpha.substring(0 , myKey.length) == myKey) {
-                                            itsOk = false
-                                            keyErrText.visible = true
-                                        } else if (solidCsVAlpha.substring(0 , myKey.length) == myKey) {
-                                            itsOk = false
-                                            keyErrText.visible = true
-                                        } else if (solidCsKAlpha.substring(0 , myKey.length) == myKey) {
-                                            itsOk = false
-                                            keyErrText.visible = true
-                                        }
-                                        if(itsOk){
-                                            myData.getKey(myKey)
-                                            gridEng.source = ""
-                                            gridCsV.source = ""
-                                            gridCsK.source = ""
-                                            gridEng.source = "icons/EngGrid.svg"
-                                            gridCsV.source = "icons/CsVGrid.svg"
-                                            gridCsK.source = "icons/CsKGrid.svg"
-                                            if (rplSpcValue != 0){
-                                                if(inputText.text != ""){
-                                                    if (inputText.text.includes(spcChar)) {
-                                                        spcCharErr.visible = true
-                                                    } else if (engCsTab.currentIndex == 0 && spcChar == "I") {
-                                                        if (inputText.text.includes("J")) {
-                                                            spcCharErr.visible = true
-                                                        }
-                                                    } else {
-                                                        if (csVKTab.currentIndex == 0 && spcChar == "K") {
-                                                            if (inputText.text.includes("Q")) {
-                                                                spcCharErr.visible = true
-                                                            }
-                                                        } else {
-                                                            if (spcChar == "V" && inputText.text.includes("W")) {
-                                                                spcCharErr.visible = true
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
+                                        keyErrText.visible = true
                                     }
                                 }
-                                enableEncDec()
                             }
                         }
 
                         // Err: char in input
                         Label {
                             id: keyErrText
-                            text: !keyErr ? (engCsTab.currentIndex ? "Klíč je stejný jako abeceda." : "Key is same like alphabet." ) :
-                                        (engCsTab.currentIndex ? ("Klíč obsahuje neočekávaný znak: "  + illChar) : ("Key contains unexpected char: " + illChar))
+                            text: emptyErr ? (engCsTab.currentIndex ? "Prázdný klíč." : "Empty key") : (engCsTab.currentIndex ? "Klíč je stejný jako abeceda." : "Key is same like alphabet." )
                             Layout.fillHeight: true
                             Layout.fillWidth: true
                             Layout.topMargin: -4
@@ -657,7 +680,7 @@ Window {
                             Layout.fillHeight: true
                             
                             Label {
-                                text: engCsTab.currentIndex ? "Doplňkový znak:" : "Supplement char:" 
+                                text: engCsTab.currentIndex ? "Doplňkový znak:" : "Supplement characer:" 
                                 Layout.fillHeight: true
                                 Layout.fillWidth: true
                                 font.pixelSize: 12
@@ -670,8 +693,8 @@ Window {
 
                             ComboBox {
                                 id: rplSpc
-                                Layout.minimumHeight: 32
-                                Layout.maximumHeight: 32
+                                Layout.minimumHeight: 24
+                                Layout.maximumHeight: 24
                                 Layout.minimumWidth: 48
                                 Layout.rightMargin: engCsTab.currentIndex == 0 ? 60 : 76
                                 Layout.maximumWidth: 48
@@ -681,16 +704,26 @@ Window {
                                 model: engCsTab.currentIndex == 0 ? engAlpha : (csVKTab.currentIndex == 0 ? csVAlpha : csKAlpha)
                                 
                                 delegate: ItemDelegate {
-                                    width: rplSpc.width
-                                    contentItem: Text { //combobox menu 
+                                    width: rplSpc.width - 10
+                                    height: 22
+                                    contentItem: Text {
                                         text: modelData
                                         color: myWhiteFont
                                         elide: Text.ElideRight
+                                        horizontalAlignment: Text.AlignHCenter
                                         verticalAlignment: Text.AlignVCenter
+                                        anchors.topMargin: -628
+                                        anchors.bottomMargin: -15
+                                        anchors.leftMargin: -600
+                                        anchors.rightMargin: -71
+                                        anchors.horizontalCenter: mainWindow.horizontalCenter
                                         font.family: "Roboto Medium"
                                     }
                                     highlighted: rplSpc.highlightedIndex === index
-                                    Component.onCompleted: background.color =  myBackground
+                                    Component.onCompleted: {
+                                        background.color =  myBackground
+                                        background.radius = 6
+                                    }
                                     Binding {
                                         target: background
                                         property: "color"
@@ -730,22 +763,23 @@ Window {
                                 }
 
                                 popup: Popup {
-                                    y: rplSpc.height - 1
+                                    y: rplSpc.height
                                     width: rplSpc.width
                                     implicitHeight: contentItem.implicitHeight
-                                    padding: 1
+                                    padding: 5
                                     contentItem: ListView {
                                         clip: true
-                                        implicitHeight: contentHeight
+                                        implicitHeight: contentHeight + 10
                                         model: rplSpc.popup.visible ? rplSpc.delegateModel : null
                                         currentIndex: rplSpc.highlightedIndex
-                                        ScrollIndicator.vertical: ScrollIndicator {active: true}
+                                        //ScrollIndicator.vertical: ScrollIndicator {active: false}
                                     }                                        
 
                                     background: Rectangle {
-                                        border.color: Qt.darker(myBackground2, 1.1)
-                                        radius: 8
-                                        color: myBackground2
+                                        border.width: 1
+                                        border.color: myHighLighht
+                                        radius:8
+                                        color: myBackground
                                     }
                                 }
 
@@ -790,7 +824,7 @@ Window {
                         Label {
                             id: spcCharErr
                             text: engCsTab.currentIndex ? (csVKTab.currentIndex == 0 ? "Znak pro náhradu mezer je ve vstupu. (W ❱❱ V)" : 
-                                        "Znak pro náhradu mezer je ve vstupu. (Q ❱❱ K)") : "Char for replace spaces is in input. (J ❱❱ I)" 
+                                        "Znak pro náhradu mezer je ve vstupu. (Q ❱❱ K)") : "Character for replace spaces is in input. (J ❱❱ I)" 
                             Layout.fillHeight: true
                             Layout.fillWidth: true
                             Layout.topMargin: -8
@@ -835,34 +869,33 @@ Window {
                                         color: myBackground
                                         radius: 8
                                     }
-                                    onEditingFinished: {
-                                        spcCharErr.visible = false
-                                        var myinputText = inputText.text
-                                        myinputText = myinputText.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-                                        myinputText = myinputText.toUpperCase()
-                                        inputText.text = myinputText
-                                        myData.getRepSpc(spcChar)
-                                        if (rplSpcValue != 0 && keyErrText.visible == false){
-                                            if (inputText.text.includes(spcChar) || myInputText.includes(spcChar)) {
-                                                spcCharErr.visible = true
-                                            } else if (engCsTab.currentIndex == 0 && spcChar == "I" ) {
-                                                if (inputText.text.includes("J") || myInputText.includes("J")) {
-                                                    spcCharErr.visible = true
-                                                }
-                                            } else {
-                                                if (csVKTab.currentIndex == 0 && spcChar == "K") {
-                                                    if (inputText.text.includes("Q") || myInputText.includes("Q")) {
-                                                        spcCharErr.visible = true
-                                                    }
-                                                } else if (spcChar == "V"){
-                                                    if (inputText.text.includes("W") || myInputText.includes("W")) {
-                                                        spcCharErr.visible = true
-                                                    }
-                                                }
+                                    /*onEditingFinished:*/ onTextChanged: {
+                                        
+                                            spcCharErr.visible = false
+                                            var tmp = inputText.cursorPosition
+                                            var nl = false
+                                            if (inputText.text.includes("\n") || inputText.text.includes("\t")) {
+                                                inputText.text = inputText.text.replace("\n", "")
+                                                inputText.text = inputText.text.replace("\t", "")
+                                                nl = true
                                             }
-                                        }
-                                        enableEncDec()
+                                            var myinputText = inputText.text
+                                            myinputText = myinputText.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                                            myinputText = myinputText.toUpperCase()
+                                            inputText.text = myinputText
+                                            if (nl) {
+                                                inputText.cursorPosition = tmp - 1
+                                            } else {
+                                                inputText.cursorPosition = tmp
+                                            }
+                                            myData.getRepSpc(spcChar)
+                                            enableEncDec()
+                                        
                                     }
+                                    /*onTextChanged: {
+                                        spcCharErr.visible = false
+                                        inputText.text = inputText.text.toUpperCase()
+                                    }*/
                                 }
                                 ScrollBar.vertical: ScrollBar {}
 
@@ -1009,6 +1042,8 @@ Window {
                                 }
                                 onClicked: {
                                     myData.getInputIndex(textFileTab.currentIndex)
+                                    emptyInErr.visible = false
+                                    spcCharErr.visible = false
                                     if (fileState.text != textChoseFile) {
                                         myData.getInput(fileDialog.currentFile)
                                     }
@@ -1016,6 +1051,22 @@ Window {
                                 }
                             }
                         } 
+
+                        //empty err
+                        Label {
+                            id: emptyInErr
+                            text: engCsTab.currentIndex ? "Není zadán vstupní text." : "Input text missing"
+                            Layout.fillHeight: true
+                            Layout.fillWidth: true
+                            Layout.topMargin: -8
+                            visible: false
+                            font.pixelSize: 12
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                            font.family: "Poppins Medium"
+                            color: myCloseBtn
+                        }
 
                         // devide spaces
                         RowLayout {
@@ -1137,7 +1188,7 @@ Window {
                                 }
 
                             Label {
-                                text: engCsTab.currentIndex == 0 ? "chars." : "znacích."
+                                text: engCsTab.currentIndex == 0 ? "characters." : "znacích."
                                 Layout.rightMargin: 20
                                 Layout.fillHeight: true
                                 Layout.fillWidth: true
@@ -1164,17 +1215,17 @@ Window {
 
                     Button {
                         id: encBtn
-                        enabled: err ? false : activeWindow
+                        enabled: activeWindow
                         Layout.fillHeight: true
                         Layout.fillWidth: true
                         Layout.rightMargin: -3
                         background: Rectangle {
                             anchors.fill: parent
-                            color: err ? myBackground : (encBtn.down ? myHighLighht : (encBtn.hovered && activeWindow ? Qt.lighter(myBackground, 2) : myBackground))
+                            color: encBtn.down ? myHighLighht : (encBtn.hovered && activeWindow ? Qt.lighter(myBackground, 2) : myBackground)
                             radius: 8
 
                             Label {
-                                text: "Encode"
+                                text: engCsTab.currentIndex ? "Šifrovat" : "Encode"
                                 anchors.fill: parent
                                 horizontalAlignment: Text.AlignHCenter
                                 verticalAlignment: Text.AlignVCenter
@@ -1190,35 +1241,75 @@ Window {
                                 anchors.rightMargin: 0
                                 anchors.topMargin: 0
                                 anchors.bottomMargin: 0
-                                color: err ? myBackground : (encBtn.down ? myHighLighht : (encBtn.hovered && activeWindow ? 
-                                        Qt.lighter(myBackground, 2) : myBackground))
+                                color: encBtn.down ? myHighLighht : (encBtn.hovered && activeWindow ? 
+                                        Qt.lighter(myBackground, 2) : myBackground)
                             }
                         }
                         onClicked: {
-                            myData.getInputIndex(textFileTab.currentIndex)
-                            if(textFileTab.currentIndex == 0) {
-                                myData.getInput(inputText.text.toUpperCase())
-                            }
-                            
-                            console.log(myEncodeText)
-                            myData.encode()
-                            if (repCount == 0) {
-                                activeWindow = false
-                                winSol.show()
+                            enableEncDec()
+                            if(!err) {
+                                myData.getInputIndex(textFileTab.currentIndex)
+                                if (inputText.text.includes(spcChar)) {
+                                    spcCharErr.visible = true
+                                    err = true
+                                } else if (engCsTab.currentIndex == 0 && spcChar == "I" ) {
+                                    if (inputText.text.includes("J")) {
+                                        spcCharErr.visible = true
+                                        err = true
+                                    }
+                                } else if (engCsTab.currentIndex && csVKTab.currentIndex == 0 && spcChar == "K") {
+                                    if (inputText.text.includes("Q")) {
+                                        spcCharErr.visible = true
+                                        err = true
+                                    }
+                                } else if (engCsTab.currentIndex && csVKTab.currentIndex && spcChar == "V"){
+                                    if (inputText.textt.includes("W")) {
+                                        spcCharErr.visible = true
+                                        err = true
+                                    }
+                                } else {
+                                    err = false
+                                    keyErrText.visible = false
+                                    spcCharErr.visible = false
+                                    emptyInErr.visible = false
+                                }
+                                if (!err) {
+                                    if(textFileTab.currentIndex == 0) {
+                                        inputText.text = inputText.text.replace("\n", "")
+                                        inputText.text = inputText.text.replace("\t", "")
+                                        myData.getInput(inputText.text.toUpperCase())
+                                    }
+                                    myData.encode()
+                                    if (repCount == 0) {
+                                        activeWindow = false
+                                        winSol.show()
+                                    } else {
+                                        activeWindow = false
+                                        var component = Qt.createComponent("Repair.qml")
+                                        var win = component.createObject()
+                                        win.crComp()
+                                    }
+                                }
+                            } else {
+                                if (!key.text) {
+                                    keyErrText.visible = true
+                                } else if (!spcCharErr.visible &&! keyErrText.visible) {
+                                    emptyInErr.visible = true
+                                }
                             }
                         }
                     }
 
                     Button {
                         id: decBtn
-                        enabled: err ? false : activeWindow
+                        enabled: activeWindow
                         Layout.fillHeight: true
-                        Layout.fillWidth: true
+                        Layout.fillWidth: true 
                         Layout.leftMargin: -3
                         background: Rectangle {
                             anchors.fill: parent
-                            color: err ? myBackground : (decBtn.down ? myHighLighht : (decBtn.hovered && activeWindow ? 
-                                        Qt.lighter(myBackground, 2) : myBackground))
+                            color: decBtn.down ? myHighLighht : (decBtn.hovered && activeWindow ? 
+                                        Qt.lighter(myBackground, 2) : myBackground)
                             radius: 8
 
                             Label {
@@ -1238,18 +1329,27 @@ Window {
                                 anchors.leftMargin: 0
                                 anchors.topMargin: 0
                                 anchors.bottomMargin: 0
-                                color: err ? myBackground : (decBtn.down ? myHighLighht : (decBtn.hovered && activeWindow ? 
-                                        Qt.lighter(myBackground, 2) : myBackground))
+                                color: decBtn.down ? myHighLighht : (decBtn.hovered && activeWindow ? 
+                                        Qt.lighter(myBackground, 2) : myBackground)
                             }
                         }
                         onClicked: {
-                            myData.getInputIndex(textFileTab.currentIndex)
-                            if(textFileTab.currentIndex == 0) {
-                                myData.getInput(inputText.text.toUpperCase())
-                            }
-                            myData.decode()
-                            if (repCount == 0) {
-                                winSol.show()
+                            enableEncDec()
+                            if(!err) {
+                                myData.getInputIndex(textFileTab.currentIndex)
+                                if(textFileTab.currentIndex == 0) {
+                                    myData.getInput(inputText.text.toUpperCase())
+                                }
+                                myData.decode()
+                                if (repCount == 0) {
+                                    winSol.show()
+                                }
+                            } else {
+                                if (!key.text) {
+                                    keyErrText.visible = true
+                                } else if (!spcCharErr.visible) {
+                                    emptyInErr.visible = true
+                                }
                             }
                         }
                     }
@@ -1360,11 +1460,15 @@ Window {
             }
 
             function onIllegalChars(ilCH) {
-                illChars = ilCH
+                badChar = ilCH
             }
 
             function onRepCount(rC){
                 repCount = rC
+            }
+
+            function onErr2(er) {
+                err2 = er
             }
         }
     }

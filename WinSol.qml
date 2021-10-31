@@ -149,7 +149,7 @@ Window {
 
                     Text {
                         y: 7
-                        text: engCsTab.currentIndex ? "Řešení" : "Solution"
+                        text: engCsTab.currentIndex ? (csVKTab.currentIndex ?"Řešení Q ❱❱ K" : "Řešení W ❱❱ V") : "Solution J ❱❱ I"
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.left: parent.left
                         font.pixelSize: 12

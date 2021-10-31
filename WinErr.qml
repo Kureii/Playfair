@@ -122,7 +122,7 @@ Window {
 
                     Label {
                         color: myCloseBtn
-                        text: inDecErr ? decodeErr : (inputErr? (textFileTab.currentIndex == 0 ? noTextErr : noFileErr) : (repErr ? errRepeatChars : noCharErr))
+                        text: engCsTab.currentIndex ? "Text nelze dešifrovat" : "Text is not possible to decode"
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                         wrapMode: Text.Wrap

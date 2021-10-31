@@ -1,5 +1,6 @@
 import os
 import sys
+from typing import Text
 from PySide6.QtCore import *
 from PySide6.QtQml import *
 from PySide6.QtWidgets import *
@@ -20,6 +21,7 @@ class GetData(QObject):
     encodeText = Signal(str)
     illegalChars = Signal(list)
     repCount = Signal(int)
+    err2 = Signal(bool)
     Spaces = 5
     langList = [0]
     eng = True
@@ -139,14 +141,26 @@ class GetData(QObject):
 
     @Slot(list)
     def repair(self, myList):
-        myAbc = self.Alpha
+        myText = self.Text
+        if len(self.langList) == 1:
+            myText = myText.replace("J", "I")
+        elif self.langList[1] == 0:
+            myText = myText.replace("W", "V")
+        else:
+            myText = myText.replace("Q", "K")
         for i in range(len(self.ilCh)):
             if myList[i][0] == 0:
-                self.Text = self.Text.replace(self.ilCh[i], "")
+                myText = myText.replace(self.ilCh[i], "")
+                if myText == '':
+                    self.err2.emit(True)
+                else:
+                    self.err2.emit(False)
             elif myList[i][0] == 1:
-                self.Alpha += self.ilCh[i]
-            else:
-                self.Text = self.Text.replace(self.ilCh[i], self.myAbcList[myList[i][1]])
+                myText = myText.replace(self.ilCh[i], myList[i][1])
+        self.Text = myText
+
+
+
 
     @Slot()
     def makeDefaultGrids(self):

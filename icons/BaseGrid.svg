@@ -1,0 +1,32 @@
+<svg version='1.1'
+    width='504' height='504'
+    xmlns='http://www.w3.org/2000/svg'>
+
+    <rect width='504' height='504' x='0' y='0' fill='#3fa108'/>
+
+    <rect width='96' height='96' x='04' y='04' fill='#201e1b'  />
+    <rect width='96' height='96' x='104' y='04' fill='#201e1b'  />
+    <rect width='96' height='96' x='204' y='04' fill='#201e1b'  />
+    <rect width='96' height='96' x='304' y='04' fill='#201e1b'  />
+    <rect width='96' height='96' x='404' y='04' fill='#201e1b'  />
+    <rect width='96' height='96' x='04' y='104' fill='#201e1b'  />
+    <rect width='96' height='96' x='104' y='104' fill='#201e1b'  />
+    <rect width='96' height='96' x='204' y='104' fill='#201e1b'  />
+    <rect width='96' height='96' x='304' y='104' fill='#201e1b'  />
+    <rect width='96' height='96' x='404' y='104' fill='#201e1b'  />
+    <rect width='96' height='96' x='04' y='204' fill='#201e1b'  />
+    <rect width='96' height='96' x='104' y='204' fill='#201e1b'  />
+    <rect width='96' height='96' x='204' y='204' fill='#201e1b'  />
+    <rect width='96' height='96' x='304' y='204' fill='#201e1b'  />
+    <rect width='96' height='96' x='404' y='204' fill='#201e1b'  />
+    <rect width='96' height='96' x='04' y='304' fill='#201e1b'  />
+    <rect width='96' height='96' x='104' y='304' fill='#201e1b'  />
+    <rect width='96' height='96' x='204' y='304' fill='#201e1b'  />
+    <rect width='96' height='96' x='304' y='304' fill='#201e1b'  />
+    <rect width='96' height='96' x='404' y='304' fill='#201e1b'  />
+    <rect width='96' height='96' x='04' y='404' fill='#201e1b'  />
+    <rect width='96' height='96' x='104' y='404' fill='#201e1b'  />
+    <rect width='96' height='96' x='204' y='404' fill='#201e1b'  />
+    <rect width='96' height='96' x='304' y='404' fill='#201e1b'  />
+    <rect width='96' height='96' x='404' y='404' fill='#201e1b'  />
+</svg>

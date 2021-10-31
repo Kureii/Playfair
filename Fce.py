@@ -99,21 +99,22 @@ class Playfair():
         return myStr.replace(" ", "")
 
     def spaceSolver(self, txt):
-        print("Space Solver fce")
         txt = list(txt)
         finalTxt = ""
         for i in range(0, len(txt), 2):
             if i + 3 < len(txt):
                 if txt[i] == self.sup: 
                     if txt[i + 1] == txt[i + 3]:
-                        txt[i] = ""
-                        txt[i + 2] = ""
+                        if txt[i] == txt[i + 2]:
+                            txt[i] = ""
+                            txt[i + 2] = ""
                     else:
                         txt[i] = " "
                 elif txt[i + 1] == self.sup:
                     if txt[i] == txt[i + 2]:
-                        txt[i + 1] = ""
-                        txt[i + 3] = ""
+                        if txt[i + 1] == txt[i + 3]:
+                            txt[i + 1] = ""
+                            txt[i + 3] = ""
                     else:
                         txt[i + 1] = " "
         if txt[-1] == self.sup:
@@ -178,6 +179,7 @@ class Playfair():
         for i in myList:
             str += i
         str = self.spaceSolver(str)
+
         return str
 
     def Steps(self, string, steps):
@@ -192,7 +194,6 @@ class Playfair():
             newString += " "
         
         return newString
-
 
 def IlChar(abc, text):
     output = []
