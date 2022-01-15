@@ -74,7 +74,7 @@ Window {
                                 }
 
                                 onPositionChanged: {
-                                    var delta = Qt.point(mouseX - clickPos.x,
+                                    let delta = Qt.point(mouseX - clickPos.x,
                                                         mouseY - clickPos.y)
                                     repair.x += delta.x
                                     repair.y += delta.y
@@ -212,13 +212,13 @@ Window {
                                 
                             }
                             onClicked: {
-                                var output = []
-                                var itsOK = true
-                                for (var i = 0; i < repCount; i++) {
+                                let output = []
+                                let itsOK = true
+                                for (let i = 0; i < repCount; i++) {
                                     output.push([container.children[i].children[0].children[1].currentIndex , container.children[i].children[0].children[2].text])
 
                                 }
-                                for (var i = 0; i < repCount; i++){
+                                for (let i = 0; i < repCount; i++){
                                     if(output[i][0] === 1 && output[i][1] === "") {
                                         container.children[i].children[0].children[2].placeholderTextColor = myCloseBtn
                                         itsOK = false
@@ -267,9 +267,9 @@ Window {
 
     }
     function crComp(){
-        var component = Qt.createComponent("RepairWidget.qml")
-        for (var i = 0; i < repCount; i++) {
-            var object = component.createObject(container)
+        let component = Qt.createComponent("RepairWidget.qml")
+        for (let i = 0; i < repCount; i++) {
+            let object = component.createObject(container)
             object.myChar = badChar[i]
 
         }

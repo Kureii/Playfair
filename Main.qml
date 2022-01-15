@@ -44,14 +44,15 @@ Window {
     property bool emptyErr: false
     property bool err: false
     property bool err2: false
+    property bool encOrDec: false
 
     property int spaceValue: 5
     property int rplSpcValue: 22
     property int repCount: 0
 
-    property var engAlpha: ["A","B","C","D","E","F","G","H","I","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"] 
-    property var csVAlpha: ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","X","Y","Z"] //cs V
-    property var csKAlpha: ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","R","S","T","U","V","W","X","Y","Z"] // cs K
+    readonly property var engAlpha: ["A","B","C","D","E","F","G","H","I","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"] 
+    readonly property var csVAlpha: ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","X","Y","Z"] //cs V
+    readonly property var csKAlpha: ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","R","S","T","U","V","W","X","Y","Z"] // cs K
     property var badChar: ["1","2"]
     
     function enableEncDec() {
@@ -89,9 +90,54 @@ Window {
                 spcCharErr.visible = false
                 emptyInErr.visible = false
             }
+        }  
+    }
+
+    function rplSpcSwitch(inAbc) {
+        let myIn
+        let myAbc = Array.from(inAbc)
+        if (textFileTab.currentIndex) {
+            myIn =  myInputText
+        } else {
+            myIn = inputText.text
         }
-        
-        
+        if (myIn != "" && !encOrDec) {
+            for (let i = 0; i < myIn.length; i++) {
+                let index = myAbc.indexOf(myIn[i])
+                if (index != -1) {
+                    myAbc.splice(index, 1)
+                }
+            }
+        }
+        return myAbc
+    }
+
+    function rplSpcIndex() {
+        let myAbc = []
+        if (!engCsTab.currentIndex) {
+            myAbc = rplSpcSwitch(engAlpha)
+        } else {
+            if (csVKTab.currentIndex) {
+                myAbc = rplSpcSwitch(csKAlpha)
+            } else {
+                myAbc = rplSpcSwitch(csVAlpha)
+            }
+        }
+        console.log(spcChar);
+        if (myAbc.includes(spcChar)) {
+            return myAbc.indexOf(spcChar)
+        } else {
+            if (myAbc.length > 0) {
+                spcChar = myAbc[0]
+            } else {
+                activeWindow = false
+                let component = Qt.createComponent("Overflow.qml")
+                let win = component.createObject()
+            }
+            rplSpcValue = 0
+            return 0
+        }
+
     }
 
     Flickable {
@@ -130,9 +176,6 @@ Window {
                     Layout.minimumHeight: 30
                     Layout.fillWidth: true
                     
-
-
-
                     Rectangle {
                         width: 200
                         height: 8
@@ -160,13 +203,11 @@ Window {
 
                             onPositionChanged: {
                                 if (activeWindow) {
-                                    var delta = Qt.point(mouseX-clickPos.x, mouseY-clickPos.y)
+                                    let delta = Qt.point(mouseX-clickPos.x, mouseY-clickPos.y)
                                     mainWindow.x += delta.x;
                                     mainWindow.y += delta.y;
                                 }
                             }
-
-
                         }
 
                         RowLayout {
@@ -604,6 +645,99 @@ Window {
                         Layout.leftMargin: engCsTab.currentIndex == 0 ? -4 : 16
                         Layout.margins: 16
 
+                        // decoding or encoding
+                        TabBar {
+                            id: decEncBar
+                            width: 240
+                            height: 35
+                            enabled: activeWindow
+                            position: TabBar.Footer
+                            font.family: "Roboto Medium"
+                            Layout.topMargin: -6
+                            Layout.rightMargin: 4
+                            Layout.leftMargin: 4
+                            Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+                            Layout.fillWidth: true
+
+                            TabButton {
+                                id: encTabButtno
+                                anchors.top: parent.top
+                                anchors.bottom: parent.bottom
+                                bottomPadding: 18
+                                padding: 8
+                                background: Rectangle {
+                                    color: encTabButtno.hovered
+                                            && activeWindow ? Qt.darker(myBackground2, 1.25) : myBackground2
+                                    anchors.fill: parent
+                                    Label {
+                                        text: engCsTab.currentIndex == 0 ? "Encode" : "Šifrovat"
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        font.weight: Font.Medium
+                                        font.family: "Poppins Medium"
+                                        anchors.verticalCenterOffset: decEncBar.currentIndex == 0 ? 2 : 0
+                                        anchors.horizontalCenter: parent.horizontalCenter
+                                        color: encTabButtno.hovered
+                                                && activeWindow ? Qt.darker(myWhiteFont, 1.25) : myUpperBar
+                                    }
+
+                                    Rectangle {
+                                        height: 4
+                                        color: decEncBar.currentIndex == 0 ? myHighLighht : (encTabButtno.hovered && activeWindow ? Qt.darker(myBackground2, 1.25) : 
+                                                myBackground2)
+                                        radius: 4
+                                        anchors.left: parent.left
+                                        anchors.right: parent.right
+                                        anchors.top: parent.top
+                                        anchors.rightMargin: 0
+                                        anchors.leftMargin: 0
+                                        anchors.topMargin: 0
+                                    }
+                                }
+                                onClicked: {
+                                    enableEncDec()
+                                    encOrDec = false
+                                }
+                            }
+
+                            TabButton {
+                                id: decTabButton
+                                anchors.top: parent.top
+                                anchors.bottom: parent.bottom
+                                bottomPadding: 18
+                                padding: 8
+                                background: Rectangle {
+                                    color: decTabButton.hovered
+                                            && activeWindow ? Qt.darker(myBackground2, 1.25) : myBackground2
+                                    anchors.fill: parent
+                                    Label {
+                                        text: engCsTab.currentIndex == 0 ? "Decode" : "Dešifrovat"
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        font.weight: Font.Medium
+                                        font.family: "Poppins Medium"
+                                        anchors.verticalCenterOffset: decEncBar.currentIndex == 1 ? 2 : 0
+                                        anchors.horizontalCenter: parent.horizontalCenter
+                                        color: decTabButton.hovered
+                                                && activeWindow ? Qt.darker(myWhiteFont, 1.25) : myUpperBar
+                                    }
+
+                                    Rectangle {
+                                        height: 4
+                                        color: decEncBar.currentIndex == 1 ? myHighLighht : (decTabButton.hovered && activeWindow ? Qt.darker(myBackground2, 1.25) : 
+                                                myBackground2)
+                                        anchors.left: parent.left
+                                        anchors.right: parent.right
+                                        anchors.top: parent.top
+                                        anchors.rightMargin: 0
+                                        anchors.leftMargin: 0
+                                        anchors.topMargin: 0
+                                    }
+                                }
+                                onClicked: {
+                                    enableEncDec()
+                                    encOrDec = true
+                                }
+                            }
+                        } 
 
                         // key
                         TextField {
@@ -632,7 +766,7 @@ Window {
                             onTextChanged: {
                                 keyErrText.visible = false
                                 if(key.text != "") {
-                                    var tmp = key.cursorPosition
+                                    let tmp = key.cursorPosition
                                     keyErr = false
                                     emptyErr = false
                                     let myKey = key.text
@@ -664,170 +798,6 @@ Window {
                             Layout.fillHeight: true
                             Layout.fillWidth: true
                             Layout.topMargin: -4
-                            visible: false
-                            font.pixelSize: 12
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
-                            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                            font.family: "Poppins Medium"
-                            color: myCloseBtn
-                        }
-
-                        // replace spaces
-                        RowLayout {
-                            Layout.columnSpan: 5
-                            Layout.fillWidth: true
-                            Layout.fillHeight: true
-                            
-                            Label {
-                                text: engCsTab.currentIndex ? "Doplňkový znak:" : "Supplement characer:" 
-                                Layout.fillHeight: true
-                                Layout.fillWidth: true
-                                font.pixelSize: 12
-                                horizontalAlignment: Text.AlignRight
-                                verticalAlignment: Text.AlignVCenter
-                                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                                font.family: "Poppins Medium"
-                                color: myUpperBar
-                            }
-
-                            ComboBox {
-                                id: rplSpc
-                                Layout.minimumHeight: 24
-                                Layout.maximumHeight: 24
-                                Layout.minimumWidth: 48
-                                Layout.rightMargin: engCsTab.currentIndex == 0 ? 60 : 76
-                                Layout.maximumWidth: 48
-                                Layout.fillWidth: true
-                                currentIndex: rplSpcValue
-                                font.family: "Poppins Medium"
-                                model: engCsTab.currentIndex == 0 ? engAlpha : (csVKTab.currentIndex == 0 ? csVAlpha : csKAlpha)
-                                
-                                delegate: ItemDelegate {
-                                    width: rplSpc.width - 10
-                                    height: 22
-                                    contentItem: Text {
-                                        text: modelData
-                                        color: myWhiteFont
-                                        elide: Text.ElideRight
-                                        horizontalAlignment: Text.AlignHCenter
-                                        verticalAlignment: Text.AlignVCenter
-                                        anchors.topMargin: -628
-                                        anchors.bottomMargin: -15
-                                        anchors.leftMargin: -600
-                                        anchors.rightMargin: -71
-                                        anchors.horizontalCenter: mainWindow.horizontalCenter
-                                        font.family: "Roboto Medium"
-                                    }
-                                    highlighted: rplSpc.highlightedIndex === index
-                                    Component.onCompleted: {
-                                        background.color =  myBackground
-                                        background.radius = 6
-                                    }
-                                    Binding {
-                                        target: background
-                                        property: "color"
-                                        value: highlighted ? myHighLighht : myBackground
-                                    }                                    
-                                }
-
-                                indicator: Image {
-                                    anchors.verticalCenter: rplSpc.verticalCenter
-                                    anchors.right: rplSpc.right
-                                    source: "icons/UpDown.svg"
-                                    anchors.rightMargin: 6
-                                    sourceSize.height: 10
-                                    sourceSize.width: 10
-                                    fillMode: Image.Pad                                        
-                                        
-                                }
-
-                                contentItem: Text {
-                                    text: rplSpc.displayText
-                                    font: rplSpc.font
-                                    color: rplSpc.pressed ? myBackground : myUpperBar
-                                    verticalAlignment: Text.AlignVCenter
-                                    anchors.horizontalCenter: rplSpc.horizontalCenter
-                                    elide: Text.ElideRight
-                                    anchors.verticalCenter: rplSpc.verticalCenter
-                                    
-                                }
-
-                                background: Rectangle {
-                                    implicitWidth: 100
-                                    implicitHeight: 25
-                                    border.color: rplSpc.pressed ? myBackground2 : Qt.darker(myBackground2, 1.1)
-                                    border.width: rplSpc.visualFocus ? 2 : 1
-                                    radius: 8
-                                    color: myBackground2
-                                }
-
-                                popup: Popup {
-                                    y: rplSpc.height
-                                    width: rplSpc.width
-                                    implicitHeight: contentItem.implicitHeight
-                                    padding: 5
-                                    contentItem: ListView {
-                                        clip: true
-                                        implicitHeight: contentHeight + 10
-                                        model: rplSpc.popup.visible ? rplSpc.delegateModel : null
-                                        currentIndex: rplSpc.highlightedIndex
-                                        //ScrollIndicator.vertical: ScrollIndicator {active: false}
-                                    }                                        
-
-                                    background: Rectangle {
-                                        border.width: 1
-                                        border.color: myHighLighht
-                                        radius:8
-                                        color: myBackground
-                                    }
-                                }
-
-                                onActivated: {
-                                    spcCharErr.visible = false
-                                    rplSpcValue = rplSpc.currentIndex
-                                    if (engCsTab.currentIndex == 0) {
-                                        spcChar = engAlpha[rplSpc.currentIndex]
-                                    } else {
-                                        if (csVKTab.currentIndex == 0) {
-                                            spcChar = csVAlpha[rplSpc.currentIndex]
-                                        } else {
-                                            spcChar = csKAlpha[rplSpc.currentIndex]
-                                        }
-                                    }
-                                    myData.getRepSpc(spcChar)
-                                    if (rplSpcValue != 0 && keyErrText.visible == false){
-                                        if (inputText.text.includes(spcChar) || myInputText.includes(spcChar)) {
-                                            spcCharErr.visible = true
-                                        } else if (engCsTab.currentIndex == 0 && spcChar == "I" ) {
-                                            if (inputText.text.includes("J") || myInputText.includes("J")) {
-                                                spcCharErr.visible = true
-                                            }
-                                        } else {
-                                            if (csVKTab.currentIndex == 0 && spcChar == "K") {
-                                                if (inputText.text.includes("Q") || myInputText.includes("Q")) {
-                                                    spcCharErr.visible = true
-                                                }
-                                            } else if (spcChar == "V"){
-                                                if (inputText.text.includes("W") || myInputText.includes("W")) {
-                                                    spcCharErr.visible = true
-                                                }
-                                            }
-                                        }
-                                    }
-                                    enableEncDec()
-                                }
-                            }
-                        }
-
-                        // Err: char in input
-                        Label {
-                            id: spcCharErr
-                            text: engCsTab.currentIndex ? (csVKTab.currentIndex == 0 ? "Znak pro náhradu mezer je ve vstupu. (W ❱❱ V)" : 
-                                        "Znak pro náhradu mezer je ve vstupu. (Q ❱❱ K)") : "Character for replace spaces is in input. (J ❱❱ I)" 
-                            Layout.fillHeight: true
-                            Layout.fillWidth: true
-                            Layout.topMargin: -8
                             visible: false
                             font.pixelSize: 12
                             horizontalAlignment: Text.AlignHCenter
@@ -869,17 +839,17 @@ Window {
                                         color: myBackground
                                         radius: 8
                                     }
-                                    /*onEditingFinished:*/ onTextChanged: {
+                                    onTextChanged: {
                                         
                                             spcCharErr.visible = false
-                                            var tmp = inputText.cursorPosition
-                                            var nl = false
+                                            let tmp = inputText.cursorPosition
+                                            let nl = false
                                             if (inputText.text.includes("\n") || inputText.text.includes("\t")) {
                                                 inputText.text = inputText.text.replace("\n", "")
                                                 inputText.text = inputText.text.replace("\t", "")
                                                 nl = true
                                             }
-                                            var myinputText = inputText.text
+                                            let myinputText = inputText.text
                                             myinputText = myinputText.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
                                             myinputText = myinputText.toUpperCase()
                                             inputText.text = myinputText
@@ -889,13 +859,10 @@ Window {
                                                 inputText.cursorPosition = tmp
                                             }
                                             myData.getRepSpc(spcChar)
+                                            rplSpc.currentIndex = rplSpcIndex()
                                             enableEncDec()
                                         
                                     }
-                                    /*onTextChanged: {
-                                        spcCharErr.visible = false
-                                        inputText.text = inputText.text.toUpperCase()
-                                    }*/
                                 }
                                 ScrollBar.vertical: ScrollBar {}
 
@@ -1067,6 +1034,170 @@ Window {
                             font.family: "Poppins Medium"
                             color: myCloseBtn
                         }
+                        // replace spaces
+                        RowLayout {
+                            Layout.columnSpan: 5
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
+                            
+                            Label {
+                                text: engCsTab.currentIndex ? "Doplňkový znak:" : "Supplement characer:" 
+                                Layout.fillHeight: true
+                                Layout.fillWidth: true
+                                font.pixelSize: 12
+                                horizontalAlignment: Text.AlignRight
+                                verticalAlignment: Text.AlignVCenter
+                                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                                font.family: "Poppins Medium"
+                                color: myUpperBar
+                            }
+
+                            ComboBox {
+                                id: rplSpc
+                                Layout.minimumHeight: 24
+                                Layout.maximumHeight: 24
+                                Layout.minimumWidth: 48
+                                Layout.rightMargin: engCsTab.currentIndex == 0 ? 60 : 76
+                                Layout.maximumWidth: 48
+                                Layout.fillWidth: true
+                                currentIndex: rplSpcIndex()
+                                font.family: "Poppins Medium"
+                                model: engCsTab.currentIndex == 0 ? rplSpcSwitch(engAlpha) : (csVKTab.currentIndex == 0 ? rplSpcSwitch(csVAlpha) : rplSpcSwitch(csKAlpha))
+                                
+                                delegate: ItemDelegate {
+                                    width: rplSpc.width - 10
+                                    height: 22
+                                    contentItem: Text {
+                                        text: modelData
+                                        color: myWhiteFont
+                                        elide: Text.ElideRight
+                                        horizontalAlignment: Text.AlignHCenter
+                                        verticalAlignment: Text.AlignVCenter
+                                        anchors.topMargin: -628
+                                        anchors.bottomMargin: -15
+                                        anchors.leftMargin: -600
+                                        anchors.rightMargin: -71
+                                        anchors.horizontalCenter: mainWindow.horizontalCenter
+                                        font.family: "Roboto Medium"
+                                    }
+                                    highlighted: rplSpc.highlightedIndex === index
+                                    Component.onCompleted: {
+                                        background.color =  myBackground
+                                        background.radius = 6
+                                    }
+                                    Binding {
+                                        target: background
+                                        property: "color"
+                                        value: highlighted ? myHighLighht : myBackground
+                                    }                                    
+                                }
+
+                                indicator: Image {
+                                    anchors.verticalCenter: rplSpc.verticalCenter
+                                    anchors.right: rplSpc.right
+                                    source: "icons/UpDown.svg"
+                                    anchors.rightMargin: 6
+                                    sourceSize.height: 10
+                                    sourceSize.width: 10
+                                    fillMode: Image.Pad                                        
+                                        
+                                }
+
+                                contentItem: Text {
+                                    text: rplSpc.displayText
+                                    font: rplSpc.font
+                                    color: rplSpc.pressed ? myBackground : myUpperBar
+                                    verticalAlignment: Text.AlignVCenter
+                                    anchors.horizontalCenter: rplSpc.horizontalCenter
+                                    elide: Text.ElideRight
+                                    anchors.verticalCenter: rplSpc.verticalCenter
+                                    
+                                }
+
+                                background: Rectangle {
+                                    implicitWidth: 100
+                                    implicitHeight: 25
+                                    border.color: rplSpc.pressed ? myBackground2 : Qt.darker(myBackground2, 1.1)
+                                    border.width: rplSpc.visualFocus ? 2 : 1
+                                    radius: 8
+                                    color: myBackground2
+                                }
+
+                                popup: Popup {
+                                    y: rplSpc.height
+                                    width: rplSpc.width
+                                    implicitHeight: contentItem.implicitHeight
+                                    padding: 5
+                                    contentItem: ListView {
+                                        clip: true
+                                        implicitHeight: contentHeight + 10
+                                        model: rplSpc.popup.visible ? rplSpc.delegateModel : null
+                                        currentIndex: rplSpc.highlightedIndex
+                                        //ScrollIndicator.vertical: ScrollIndicator {active: false}
+                                    }                                        
+
+                                    background: Rectangle {
+                                        border.width: 1
+                                        border.color: myHighLighht
+                                        radius:8
+                                        color: myBackground
+                                    }
+                                }
+
+                                onActivated: {
+                                    spcCharErr.visible = false
+                                    rplSpcValue = rplSpc.currentIndex
+                                    if (engCsTab.currentIndex == 0) {
+                                        spcChar = engAlpha[rplSpc.currentIndex]
+                                    } else {
+                                        if (csVKTab.currentIndex == 0) {
+                                            spcChar = csVAlpha[rplSpc.currentIndex]
+                                        } else {
+                                            spcChar = csKAlpha[rplSpc.currentIndex]
+                                        }
+                                    }
+                                    myData.getRepSpc(spcChar)
+                                    if (rplSpcValue != 0 && keyErrText.visible == false){
+                                        if (inputText.text.includes(spcChar) || myInputText.includes(spcChar)) {
+                                            spcCharErr.visible = true
+                                        } else if (engCsTab.currentIndex == 0 && spcChar == "I" ) {
+                                            if (inputText.text.includes("J") || myInputText.includes("J")) {
+                                                spcCharErr.visible = true
+                                            }
+                                        } else {
+                                            if (csVKTab.currentIndex == 0 && spcChar == "K") {
+                                                if (inputText.text.includes("Q") || myInputText.includes("Q")) {
+                                                    spcCharErr.visible = true
+                                                }
+                                            } else if (spcChar == "V"){
+                                                if (inputText.text.includes("W") || myInputText.includes("W")) {
+                                                    spcCharErr.visible = true
+                                                }
+                                            }
+                                        }
+                                    }
+                                    enableEncDec()
+                                }
+                            }
+                        }
+
+                        // Err: char in input
+                        Label {
+                            id: spcCharErr
+                            text: engCsTab.currentIndex ? (csVKTab.currentIndex == 0 ? "Znak pro náhradu mezer je ve vstupu. (W ❱❱ V)" : 
+                                        "Znak pro náhradu mezer je ve vstupu. (Q ❱❱ K)") : "Character for replace spaces is in input. (J ❱❱ I)" 
+                            Layout.fillHeight: true
+                            Layout.fillWidth: true
+                            Layout.topMargin: -8
+                            visible: false
+                            font.pixelSize: 12
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                            font.family: "Poppins Medium"
+                            color: myCloseBtn
+                        }
+
 
                         // devide spaces
                         RowLayout {
@@ -1213,6 +1344,7 @@ Window {
                     Layout.minimumHeight: 35
                     Layout.topMargin: -8
 
+                    //encode btn
                     Button {
                         id: encBtn
                         enabled: activeWindow
@@ -1225,135 +1357,99 @@ Window {
                             radius: 8
 
                             Label {
-                                text: engCsTab.currentIndex ? "Šifrovat" : "Encode"
+                                text: encOrDec ?  (engCsTab.currentIndex ? "Dešifrovat" : "Decode"):(engCsTab.currentIndex ? "Šifrovat" : "Encode")
                                 anchors.fill: parent
                                 horizontalAlignment: Text.AlignHCenter
                                 verticalAlignment: Text.AlignVCenter
                                 font.family: "Roboto Medium"
                                 color: myWhiteFont
                             }
-
-                            Rectangle {
-                                width: 16
-                                anchors.right: parent.right
-                                anchors.top: parent.top
-                                anchors.bottom: parent.bottom
-                                anchors.rightMargin: 0
-                                anchors.topMargin: 0
-                                anchors.bottomMargin: 0
-                                color: encBtn.down ? myHighLighht : (encBtn.hovered && activeWindow ? 
-                                        Qt.lighter(myBackground, 2) : myBackground)
-                            }
                         }
                         onClicked: {
                             enableEncDec()
-                            if(!err) {
-                                myData.getInputIndex(textFileTab.currentIndex)
-                                if (inputText.text.includes(spcChar)) {
-                                    spcCharErr.visible = true
-                                    err = true
-                                } else if (engCsTab.currentIndex == 0 && spcChar == "I" ) {
-                                    if (inputText.text.includes("J")) {
-                                        spcCharErr.visible = true
-                                        err = true
+                            
+                            if (!encOrDec) { // encoding
+                                if(!err) {
+                                    let itsOK = false
+                                    let myIn =""
+                                    if (textFileTab.currentIndex) {
+                                        myIn = myInputText
+                                    } else {
+                                        myIn = inputText.text
                                     }
-                                } else if (engCsTab.currentIndex && csVKTab.currentIndex == 0 && spcChar == "K") {
-                                    if (inputText.text.includes("Q")) {
+                                    myData.getInputIndex(textFileTab.currentIndex)
+
+                                    if (inputText.text.includes(spcChar)) {
                                         spcCharErr.visible = true
                                         err = true
+                                    } else if (engCsTab.currentIndex == 0 && spcChar == "I" ) {
+                                        if (inputText.text.includes("J")) {
+                                            spcCharErr.visible = true
+                                            err = true
+                                        }
+                                    } else if (engCsTab.currentIndex && csVKTab.currentIndex == 0 && spcChar == "K") {
+                                        if (inputText.text.includes("Q")) {
+                                            spcCharErr.visible = true
+                                            err = true
+                                        }
+                                    } else if (engCsTab.currentIndex && csVKTab.currentIndex && spcChar == "V"){
+                                        if (inputText.text.includes("W")) {
+                                            spcCharErr.visible = true
+                                            err = true
+                                        }
+                                    } else {
+                                        err = false
+                                        keyErrText.visible = false
+                                        spcCharErr.visible = false
+                                        emptyInErr.visible = false
                                     }
-                                } else if (engCsTab.currentIndex && csVKTab.currentIndex && spcChar == "V"){
-                                    if (inputText.textt.includes("W")) {
-                                        spcCharErr.visible = true
-                                        err = true
+                                    if (!err) {
+                                        if(textFileTab.currentIndex == 0) {
+                                            inputText.text = inputText.text.replace("\n", "")
+                                            inputText.text = inputText.text.replace("\t", "")
+                                            myData.getInput(inputText.text.toUpperCase())
+                                        }
+                                        myData.encode()
+                                        if (repCount == 0) {
+                                            activeWindow = false
+                                            winSol.show()
+                                        } else {
+                                            activeWindow = false
+                                            let component = Qt.createComponent("Repair.qml")
+                                            let win = component.createObject()
+                                            win.crComp()
+                                        }
                                     }
                                 } else {
-                                    err = false
-                                    keyErrText.visible = false
-                                    spcCharErr.visible = false
-                                    emptyInErr.visible = false
+                                    if (!key.text) {
+                                        keyErrText.visible = true
+                                    } else if (!spcCharErr.visible &&! keyErrText.visible) {
+                                        emptyInErr.visible = true
+                                    }
                                 }
-                                if (!err) {
+                            } else { // decoding
+                                if(!err) {
+                                    myData.getInputIndex(textFileTab.currentIndex)
                                     if(textFileTab.currentIndex == 0) {
-                                        inputText.text = inputText.text.replace("\n", "")
-                                        inputText.text = inputText.text.replace("\t", "")
                                         myData.getInput(inputText.text.toUpperCase())
                                     }
-                                    myData.encode()
+                                    myData.decode()
                                     if (repCount == 0) {
-                                        activeWindow = false
                                         winSol.show()
-                                    } else {
-                                        activeWindow = false
-                                        var component = Qt.createComponent("Repair.qml")
-                                        var win = component.createObject()
-                                        win.crComp()
+                                    }
+                                } else {
+                                    if (!key.text) {
+                                        keyErrText.visible = true
+                                    } else if (!spcCharErr.visible) {
+                                        emptyInErr.visible = true
                                     }
                                 }
-                            } else {
-                                if (!key.text) {
-                                    keyErrText.visible = true
-                                } else if (!spcCharErr.visible &&! keyErrText.visible) {
-                                    emptyInErr.visible = true
-                                }
                             }
                         }
                     }
 
-                    Button {
-                        id: decBtn
-                        enabled: activeWindow
-                        Layout.fillHeight: true
-                        Layout.fillWidth: true 
-                        Layout.leftMargin: -3
-                        background: Rectangle {
-                            anchors.fill: parent
-                            color: decBtn.down ? myHighLighht : (decBtn.hovered && activeWindow ? 
-                                        Qt.lighter(myBackground, 2) : myBackground)
-                            radius: 8
-
-                            Label {
-                                text: "Decode"
-                                anchors.fill: parent
-                                horizontalAlignment: Text.AlignHCenter
-                                verticalAlignment: Text.AlignVCenter
-                                font.family: "Roboto Medium"
-                                color: myWhiteFont
-                            }
-
-                            Rectangle {
-                                width: 16
-                                anchors.left: parent.left
-                                anchors.top: parent.top
-                                anchors.bottom: parent.bottom
-                                anchors.leftMargin: 0
-                                anchors.topMargin: 0
-                                anchors.bottomMargin: 0
-                                color: decBtn.down ? myHighLighht : (decBtn.hovered && activeWindow ? 
-                                        Qt.lighter(myBackground, 2) : myBackground)
-                            }
-                        }
-                        onClicked: {
-                            enableEncDec()
-                            if(!err) {
-                                myData.getInputIndex(textFileTab.currentIndex)
-                                if(textFileTab.currentIndex == 0) {
-                                    myData.getInput(inputText.text.toUpperCase())
-                                }
-                                myData.decode()
-                                if (repCount == 0) {
-                                    winSol.show()
-                                }
-                            } else {
-                                if (!key.text) {
-                                    keyErrText.visible = true
-                                } else if (!spcCharErr.visible) {
-                                    emptyInErr.visible = true
-                                }
-                            }
-                        }
-                    }
-
+                    
+                    
                     WinSol {
                         id: winSol
                         visible: false
@@ -1401,38 +1497,41 @@ Window {
             onAccepted: {
                 fileState.text = textChoseFile
                 fileState.color = myUpperBar
-                var url = String(fileDialog.currentFile)
-                var index = 0
-                var urlCh = url.split("")
+                let url = String(fileDialog.currentFile)
+                let index = 0
+                let urlCh = url.split("")
                 for (let i =0; i <url.length; i++){
                     if(urlCh[i] === "/") {index = i + 1;}
                 }
-                var filename = url.substring(index);
+                let filename = url.substring(index);
                 fileState.text = filename
                 myData.getInput(url)
                 if (myInputText == ""){
                     fileState.text = engCsTab.currentIndex == 0 ? "File is empty." : "Soubor je prázný."
                     fileState.color = myCloseBtn
                 } else {
-                    if (rplSpcValue != 0 && keyErrText.visible == false){
-                        if (myInputText.includes(spcChar)) {
+                    myInputText = myInputText.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                    myInputText = myInputText.toUpperCase()
+                    if (myInputText.includes(spcChar)) {
+                        spcCharErr.visible = true
+                    } else if (engCsTab.currentIndex == 0 && spcChar == "I") {
+                        if (myInputText.includes("J")) {
                             spcCharErr.visible = true
-                        } else if (engCsTab.currentIndex == 0 && spcChar == "I") {
-                            if (myInputText.includes("J")) {
+                        }
+                    } else {
+                        if (csVKTab.currentIndex == 0 && spcChar == "K") {
+                            if (myInputText.includes("Q")) {
                                 spcCharErr.visible = true
                             }
                         } else {
-                            if (csVKTab.currentIndex == 0 && spcChar == "K") {
-                                if (myInputText.includes("Q")) {
-                                    spcCharErr.visible = true
-                                }
-                            } else {
-                                if (spcChar == "V" && myInputText.includes("W")) {
-                                    spcCharErr.visible = true
-                                }
+                            if (spcChar == "V" && myInputText.includes("W")) {
+                                spcCharErr.visible = true
                             }
                         }
                     }
+                    myData.getInputIndex(0)
+                    myData.getInput(myInputText)
+                    rplSpc.currentIndex = rplSpcIndex()
                 }
                 enableEncDec()
 

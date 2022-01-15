@@ -70,7 +70,7 @@ Window {
                             }
 
                             onPositionChanged: {
-                                var delta = Qt.point(mouseX - clickPos.x,
+                                let delta = Qt.point(mouseX - clickPos.x,
                                                      mouseY - clickPos.y)
                                 winSol.x += delta.x
                                 winSol.y += delta.y

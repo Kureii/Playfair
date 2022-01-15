@@ -1,6 +1,5 @@
 import os
 import sys
-from typing import Text
 from PySide6.QtCore import *
 from PySide6.QtQml import *
 from PySide6.QtWidgets import *
