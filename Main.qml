@@ -123,7 +123,6 @@ Window {
                 myAbc = rplSpcSwitch(csVAlpha)
             }
         }
-        console.log(spcChar);
         if (myAbc.includes(spcChar)) {
             return myAbc.indexOf(spcChar)
         } else {

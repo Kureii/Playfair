@@ -129,7 +129,6 @@ class Playfair():
         myList = self.prepareString(myStr)
         keyDict = self.makeDict(myKey)
         invKeyDict = self.makeInvDict(myKey)
-        print(myList)
         for i in range(0,len(myList), 2):
             tmp = keyDict[myList[i]]
             tmp2 = keyDict[myList[i + 1]]
@@ -158,7 +157,6 @@ class Playfair():
         myList = list(myStr)
         keyDict = self.makeDict(myKey)
         invKeyDict = self.makeInvDict(myKey)
-        print(f"key: {myKey}\nstr: {myStr}")
         for i in range(0,len(myList), 2):
             tmp = keyDict[myList[i]]
             tmp2 = keyDict[myList[i + 1]]
